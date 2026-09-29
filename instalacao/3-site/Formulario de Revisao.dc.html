@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/organic-b9a4001a-5f87-4020-9d98-9f5ac7d76b2d/styles.css">
+<script src="_ds/organic-b9a4001a-5f87-4020-9d98-9f5ac7d76b2d/_ds_bundle.js"></script>
+<script src="integracao/config.js"></script>
+<script src="integracao/ndh-api.js"></script>
+<title>Formulário de revisão da prova · 25 anos do NDH</title>
+<style>body{margin:0;background:var(--color-bg)}a{color:#ab201d}a:hover{color:#911412}</style>
+</helmet>
+<div style="max-width:880px;padding:48px 28px 140px;display:flex;flex-direction:column;gap:36px;font-family:var(--font-body);color:var(--color-text)">
+
+  <header style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="tag tag-accent">Tarefa 3</span><span class="tag tag-outline">Prazo: 10 de outubro de 2026</span></div>
+    <div style="display:flex;gap:16px;align-items:center"><img src="assets/flor.png" alt="" style="width:56px;height:56px;flex:none"><h1 style="font-size:40px;margin:0;line-height:1.05">Revisão da prova dos autores</h1></div>
+    <p style="margin:0;font-size:16px;line-height:1.6;max-width:680px;color:var(--color-neutral-800)">25 anos do Núcleo de Direitos Humanos. Um envio por capítulo. Cada campo tem um código (entre colchetes) que acompanha a resposta e dá nome aos arquivos enviados.</p>
+    <sc-if value="{{ locked }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 16px;border-radius:var(--radius-md);background:var(--color-accent-2-100);color:var(--color-accent-2-800);font-size:14px"><strong>Acesso pessoal:</strong> {{ accessName }} · capítulo {{ cap }}<a href="{{ portalHref }}" style="margin-left:auto;font-weight:700">Abrir meu capítulo no portal</a></div></sc-if>
+    <span class="tag tag-neutral" style="align-self:flex-start">{{ modeLabel }}</span>
+  </header>
+
+  <section style="background:#fbf7ef;border-radius:var(--radius-lg);padding:28px;display:flex;flex-direction:column;gap:18px">
+    <h2 style="font-size:24px;margin:0">A · Identificação</h2>
+    <div class="field"><label for="A01">[A01] Código do capítulo *</label>
+      <select id="A01" class="input" value="{{ cap }}" onChange="{{ setCap }}" disabled="{{ locked }}">
+        <option value="">Selecione…</option>
+        <sc-for list="{{ chapters }}" as="c" hint-placeholder-count="3"><option value="{{ c.id }}">{{ c.label }}</option></sc-for>
+      </select>
+    </div>
+    <sc-if value="{{ hasCap }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:14px 18px;border-radius:var(--radius-md);background:#e8e6c0;font-size:14px;line-height:1.5"><strong>{{ capTitle }}</strong><br>{{ capAuthors }}</div>
+    </sc-if>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+      <div class="field"><label for="A02">[A02] Nome de quem envia *</label><input id="A02" class="input" value="{{ resp.nome }}" onChange="{{ setResp.nome }}"></div>
+      <div class="field"><label for="A03">[A03] E-mail *</label><input id="A03" type="email" class="input" value="{{ resp.email }}" onChange="{{ setResp.email }}"></div>
+    </div>
+  </section>
+
+  <section style="background:#fbf7ef;border-radius:var(--radius-lg);padding:28px;display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;flex-direction:column;gap:4px"><h2 style="font-size:24px;margin:0">B · Autoria e fotografias</h2><p style="margin:0;font-size:14px;color:var(--color-neutral-800)">Um bloco por autor, na ordem de publicação. Foto: rosto e ombros, luz natural, fundo liso creme, ocre claro ou branco; JPG/PNG a partir de 1500 × 1500 px.</p></div>
+    <sc-if value="{{ noAuthors }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-size:14px;color:var(--color-neutral-700)">Selecione o capítulo em [A01] para carregar os autores.</p></sc-if>
+    <sc-for list="{{ authors }}" as="a" hint-placeholder-count="0">
+      <div style="border-radius:var(--radius-md);box-shadow:inset 0 0 0 1px var(--color-divider);padding:20px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><strong style="font-family:var(--font-heading);font-weight:400;font-size:18px">Autor(a) {{ a.k }}</strong><span class="tag tag-accent-2">{{ a.code }}</span></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+          <div class="field"><label>[{{ a.code }}.1] Nome para publicação *</label><input class="input" value="{{ a.name }}" onChange="{{ a.set.name }}"></div>
+          <div class="field"><label>[{{ a.code }}.2] Vínculo institucional</label><input class="input" value="{{ a.vinculo }}" onChange="{{ a.set.vinculo }}"></div>
+          <div class="field"><label>[{{ a.code }}.3] E-mail</label><input class="input" type="email" value="{{ a.email }}" onChange="{{ a.set.email }}"></div>
+          <div class="field"><label>[{{ a.code }}.4] ORCID</label><input class="input" placeholder="0000-0000-0000-0000" value="{{ a.orcid }}" onChange="{{ a.set.orcid }}"></div>
+          <div class="field"><label>[{{ a.code }}.5] Instagram / redes para marcação</label><input class="input" placeholder="@perfil" value="{{ a.redes }}" onChange="{{ a.set.redes }}"></div>
+        </div>
+        <div class="field"><label>[{{ a.code }}.6] Minibiografia atualizada (até 80 palavras)</label><textarea class="input" style="border-radius:var(--radius-md)" value="{{ a.bio }}" onChange="{{ a.set.bio }}"></textarea></div>
+        <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between">
+          <label class="radio"><input type="checkbox" checked="{{ a.confirma }}" onChange="{{ a.set.confirma }}"><span class="dot" style="border-radius:5px"></span>[{{ a.code }}.7] Confirmo a autoria e os dados acima *</label>
+          <label class="btn btn-secondary" style="cursor:pointer">[{{ a.code }}.8] Foto<input type="file" accept="image/jpeg,image/png" onChange="{{ a.set.foto }}" style="display:none"></label>
+        </div>
+        <span style="font-size:12px;color:var(--color-neutral-700)">{{ a.fotoInfo }}</span>
+      </div>
+    </sc-for>
+  </section>
+
+  <section style="background:#fbf7ef;border-radius:var(--radius-lg);padding:28px;display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;flex-direction:column;gap:4px"><h2 style="font-size:24px;margin:0">C · Revisões textuais</h2><p style="margin:0;font-size:14px;color:var(--color-neutral-800)">Uma linha por alteração. O código do parágrafo está na margem externa da prova (ex.: 03·12).</p></div>
+    <sc-for list="{{ revs }}" as="r" hint-placeholder-count="1">
+      <div style="border-radius:var(--radius-md);box-shadow:inset 0 0 0 1px var(--color-divider);padding:18px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span class="tag tag-accent-2">{{ r.code }}</span><button class="btn btn-ghost" onClick="{{ r.remove }}">Remover</button></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px">
+          <div class="field"><label>[{{ r.code }}.1] Página</label><input class="input" inputmode="numeric" value="{{ r.pag }}" onChange="{{ r.set.pag }}"></div>
+          <div class="field"><label>[{{ r.code }}.2] Código do parágrafo</label><input class="input" placeholder="03·12" value="{{ r.cod }}" onChange="{{ r.set.cod }}"></div>
+          <div class="field"><label>[{{ r.code }}.3] Tipo</label><select class="input" value="{{ r.tipo }}" onChange="{{ r.set.tipo }}"><option value="">Selecione…</option><option>Ortografia ou digitação</option><option>Dado ou informação</option><option>Citação</option><option>Referência</option><option>Nome ou autoria</option><option>Tabela ou figura</option><option>Outra</option></select></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">
+          <div class="field"><label>[{{ r.code }}.4] Trecho atual (copie da prova)</label><textarea class="input" style="border-radius:var(--radius-md)" value="{{ r.atual }}" onChange="{{ r.set.atual }}"></textarea></div>
+          <div class="field"><label>[{{ r.code }}.5] Trecho corrigido</label><textarea class="input" style="border-radius:var(--radius-md)" value="{{ r.novo }}" onChange="{{ r.set.novo }}"></textarea></div>
+        </div>
+        <div class="field"><label>[{{ r.code }}.6] Justificativa (opcional)</label><input class="input" value="{{ r.just }}" onChange="{{ r.set.just }}"></div>
+      </div>
+    </sc-for>
+    <button class="btn btn-secondary" style="align-self:flex-start" onClick="{{ addRev }}">+ Adicionar revisão</button>
+  </section>
+
+  <section style="background:#fbf7ef;border-radius:var(--radius-lg);padding:28px;display:flex;flex-direction:column;gap:18px">
+    <h2 style="font-size:24px;margin:0">D · Declaração de uso de inteligência artificial</h2>
+    <div class="field"><label>[D01] Houve uso de ferramentas de IA na elaboração do capítulo? *</label>
+      <div class="seg" role="radiogroup"><label class="seg-opt"><input type="radio" name="D01" checked="{{ iaNao }}" onChange="{{ setIaNao }}">Não</label><label class="seg-opt"><input type="radio" name="D01" checked="{{ iaSim }}" onChange="{{ setIaSim }}">Sim</label></div>
+    </div>
+    <sc-if value="{{ iaSim }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="field"><label for="D02">[D02] Ferramentas e versões *</label><input id="D02" class="input" placeholder="Ex.: nome da ferramenta, versão, data de uso" value="{{ ia.ferramentas }}" onChange="{{ setIa.ferramentas }}"></div>
+        <div class="field"><label>[D03] Finalidade do uso *</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ iaFins }}" as="o" hint-placeholder-count="4"><span class="seg"><label class="seg-opt"><input type="checkbox" checked="{{ o.on }}" onChange="{{ o.toggle }}">{{ o.label }}</label></span></sc-for></div>
+        </div>
+        <div class="field"><label>[D04] Etapas em que houve uso</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ iaEtapas }}" as="o" hint-placeholder-count="4"><span class="seg"><label class="seg-opt"><input type="checkbox" checked="{{ o.on }}" onChange="{{ o.toggle }}">{{ o.label }}</label></span></sc-for></div>
+        </div>
+        <div class="field"><label for="D05">[D05] Descrição do uso e da revisão humana realizada</label><textarea id="D05" class="input" style="border-radius:var(--radius-md)" value="{{ ia.desc }}" onChange="{{ setIa.desc }}"></textarea></div>
+      </div>
+    </sc-if>
+    <label class="radio"><input type="checkbox" checked="{{ ia.compromisso }}" onChange="{{ setIa.compromisso }}"><span class="dot" style="border-radius:5px"></span>[D06] Declaro que o conteúdo foi revisado pelos autores, que assumem a responsabilidade integral por ele *</label>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+      <button class="btn btn-ghost" onClick="{{ downloadModelo }}">Baixar modelo da declaração</button>
+      <label class="btn btn-secondary" style="cursor:pointer">[D07] Declaração assinada (PDF) *<input type="file" accept="application/pdf" onChange="{{ setDecl }}" style="display:none"></label>
+      <span style="font-size:12px;color:var(--color-neutral-700)">{{ declInfo }}</span>
+    </div>
+  </section>
+
+  <section style="background:#fbf7ef;border-radius:var(--radius-lg);padding:28px;display:flex;flex-direction:column;gap:18px">
+    <h2 style="font-size:24px;margin:0">E · Card de divulgação</h2>
+    <sc-if value="{{ hasCap }}" hint-placeholder-val="{{ false }}"><blockquote style="margin:0;padding:12px 18px;border-radius:var(--radius-md);background:#ab201d;color:#ffffff;font-family:var(--font-heading);font-size:17px;line-height:1.3">“{{ destaque }}”</blockquote></sc-if>
+    <div class="field"><label>[E01] A frase destacada representa o capítulo?</label>
+      <div class="seg"><label class="seg-opt"><input type="radio" name="E01" checked="{{ cardOk }}" onChange="{{ setCardOk }}">Sim, manter</label><label class="seg-opt"><input type="radio" name="E01" checked="{{ cardOutra }}" onChange="{{ setCardOutra }}">Sugerir outra</label></div>
+    </div>
+    <sc-if value="{{ cardOutra }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) 140px;gap:12px">
+        <div class="field"><label>[E02] Frase sugerida (trecho literal do capítulo, até 230 caracteres)</label><input class="input" maxlength="230" value="{{ card.frase }}" onChange="{{ setCard.frase }}"></div>
+        <div class="field"><label>[E03] Código do parágrafo</label><input class="input" placeholder="03·12" value="{{ card.cod }}" onChange="{{ setCard.cod }}"></div>
+      </div>
+    </sc-if>
+  </section>
+
+  <section style="background:#fbf7ef;border-radius:var(--radius-lg);padding:28px;display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;flex-direction:column;gap:4px"><h2 style="font-size:24px;margin:0">F · Imagens adicionais (opcional)</h2><p style="margin:0;font-size:14px;color:var(--color-neutral-800)">Até duas, para a página de imagens antes da próxima abertura. 300 dpi no tamanho de uso.</p></div>
+    <sc-for list="{{ imgs }}" as="m" hint-placeholder-count="2">
+      <div style="border-radius:var(--radius-md);box-shadow:inset 0 0 0 1px var(--color-divider);padding:18px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><span class="tag tag-accent-2">{{ m.code }}</span><label class="btn btn-secondary" style="cursor:pointer">[{{ m.code }}.1] Arquivo<input type="file" accept="image/*" onChange="{{ m.set.file }}" style="display:none"></label></div>
+        <span style="font-size:12px;color:var(--color-neutral-700)">{{ m.fileInfo }}</span>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+          <div class="field"><label>[{{ m.code }}.2] Legenda</label><input class="input" value="{{ m.legenda }}" onChange="{{ m.set.legenda }}"></div>
+          <div class="field"><label>[{{ m.code }}.3] Fonte e crédito</label><input class="input" value="{{ m.credito }}" onChange="{{ m.set.credito }}"></div>
+        </div>
+        <div class="field"><label>[{{ m.code }}.4] Texto alternativo (até 250 caracteres)</label><input class="input" maxlength="250" value="{{ m.alt }}" onChange="{{ m.set.alt }}"></div>
+        <label class="radio"><input type="checkbox" checked="{{ m.autoriza }}" onChange="{{ m.set.autoriza }}"><span class="dot" style="border-radius:5px"></span>[{{ m.code }}.5] Tenho autorização de uso da imagem e das pessoas retratadas</label>
+      </div>
+    </sc-for>
+  </section>
+
+  <section style="background:#fbf7ef;border-radius:var(--radius-lg);padding:28px;display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;flex-direction:column;gap:4px"><h2 style="font-size:24px;margin:0">H · Fotografias publicadas no capítulo</h2><p style="margin:0;font-size:14px;color:var(--color-neutral-800)">Para capítulos com fotografias em página inteira (ex.: ART-22). Originais: mínimo 1890 × 2717 px (300 ppi em 16 × 23 cm), sem compressão.</p></div>
+    <div class="field"><label for="H01">[H01] Dados técnicos por figura (câmera, lente, distância focal, abertura, velocidade, ISO, data, tratamento)</label><textarea id="H01" class="input" style="border-radius:var(--radius-md)" placeholder="Figura 1: … / Figura 2: …" value="{{ fotoTec }}" onChange="{{ setFotoTec }}"></textarea></div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+      <label class="btn btn-secondary" style="cursor:pointer">[H02] Termos de autorização (PDF)<input type="file" accept="application/pdf" onChange="{{ setTermo }}" style="display:none"></label><span style="font-size:12px;color:var(--color-neutral-700)">{{ termoInfo }}</span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+      <label class="btn btn-secondary" style="cursor:pointer">[H03] Originais em alta resolução<input type="file" accept="image/*" multiple="{{ true }}" onChange="{{ setOrig }}" style="display:none"></label><span style="font-size:12px;color:var(--color-neutral-700)">{{ origInfo }}</span>
+    </div>
+  </section>
+
+  <section style="background:#fbf7ef;border-radius:var(--radius-lg);padding:28px;display:flex;flex-direction:column;gap:18px">
+    <h2 style="font-size:24px;margin:0">G · Observações</h2>
+    <div class="field"><label for="G01">[G01] Atualizações, dúvidas ou comentários à organização</label><textarea id="G01" class="input" style="border-radius:var(--radius-md)" value="{{ obs }}" onChange="{{ setObs }}"></textarea></div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:14px">
+    <sc-if value="{{ hasErrors }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:16px 20px;border-radius:var(--radius-md);background:#fde2dc;color:#7d1210;font-size:14px;line-height:1.6"><strong>Faltam campos obrigatórios:</strong> {{ errorsText }}</div>
+    </sc-if>
+    <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:16px 20px;border-radius:var(--radius-md);background:var(--color-accent-2-100);color:var(--color-accent-2-800);font-size:14px;line-height:1.6"><strong>Envio registrado.</strong> {{ sentText }}</div>
+    </sc-if>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primary" onClick="{{ submit }}">{{ submitLabel }}</button><a class="btn btn-ghost" href="Prova dos Autores.dc.html">Voltar à prova</a></div>
+    <p style="margin:0;font-size:13px;color:var(--color-neutral-700);max-width:640px">O envio vai para a pasta do capítulo no Drive e passa pela verificação do agente. Se a conexão falhar, o pacote é baixado para envio por e-mail. O pacote reúne as respostas em um arquivo de registro e renomeia cada anexo com o seu código (ex.: ART-03-A1-FOTO.jpg, ART-03-DECL-IA.pdf, ART-03-IMG-01.png).</p>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const FINS = ['Revisão linguística', 'Tradução', 'Busca ou levantamento bibliográfico', 'Resumo ou síntese', 'Análise de dados', 'Geração de texto', 'Geração ou edição de imagem', 'Transcrição', 'Outra'];
+const ETAPAS = ['Planejamento', 'Redação', 'Revisão', 'Análise', 'Tradução', 'Elaboração de figuras'];
+class Component extends DCLogic {
+  state = { data: null, cap: '', resp: { nome: '', email: '' }, authors: [], revs: [{}], ia: { uso: '', ferramentas: '', fins: [], etapas: [], desc: '', compromisso: false }, decl: null, card: { ok: '', frase: '', cod: '' }, imgs: [{}, {}], obs: '', fotoTec: '', termo: null, orig: [], errors: [], sent: '' };
+  async componentDidMount() {
+    const wait = () => new Promise(r => { const k = () => window.NDH ? r() : setTimeout(k, 50); k(); }); await wait();
+    let data; try { data = await window.NDH.data(); } catch (e) { this.setState({ errors: [e.message] }); return; } this.setState({ data });
+    const q = new URLSearchParams(location.search); const art = q.get('art'), t = q.get('chave');
+    if (art && t) { const who = await window.NDH.checkAccess(art, t); if (who) { this.setCap(art); this.setState({ locked: true, token: t, access: who }); } else this.setState({ errors: ['Link de acesso inválido. Use o link pessoal enviado por e-mail.'] }); }
+  }
+  arts() { return this.state.data ? this.state.data.parts.flatMap(p => p.articles) : []; }
+  art() { return this.arts().find(a => a.id === this.state.cap); }
+  strip(s) { return (s || '').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim(); }
+  ext(f) { const m = f && f.name.match(/\.[a-z0-9]+$/i); return m ? m[0].toLowerCase() : ''; }
+  upd(key, i, field, v) { this.setState(s => { const arr = s[key].slice(); arr[i] = { ...arr[i], [field]: v }; return { [key]: arr }; }); }
+  val(e) { return e && e.target ? (e.target.type === 'checkbox' ? e.target.checked : e.target.type === 'file' ? e.target.files[0] : e.target.value) : e; }
+  setCap = e => { const id = this.val(e); const a = this.arts().find(x => x.id === id); this.setState({ cap: id, sent: '', errors: [], authors: a ? a.authors.map(x => ({ name: x.name, email: x.email, orcid: x.orcid, vinculo: '', redes: '', bio: this.strip(x.bio).replace(/\s*Lattes:.*$/i, '').replace(/\s*E-mail:.*$/i, ''), confirma: false, foto: null })) : [] }); };
+  toggle(list, v) { return list.includes(v) ? list.filter(x => x !== v) : [...list, v]; }
+  modelo() {
+    const a = this.art(); const t = a ? this.strip(a.titleClean) : '[título do capítulo]'; const au = a ? a.authors.map(x => x.name).join(', ') : '[autores]'; const ia = this.state.ia;
+    return `DECLARAÇÃO DE USO DE INTELIGÊNCIA ARTIFICIAL\n\nLivro: 25 anos do Núcleo de Direitos Humanos: trajetórias, desafios e perspectivas para a promoção da dignidade humana\nCapítulo: ${a ? a.id : '[código]'} — ${t}\nAutoria: ${au}\n\n( ${ia.uso === 'nao' ? 'X' : ' '} ) Declaramos que não foram utilizadas ferramentas de inteligência artificial na elaboração deste capítulo.\n( ${ia.uso === 'sim' ? 'X' : ' '} ) Declaramos que foram utilizadas ferramentas de inteligência artificial, conforme descrito abaixo:\n\nFerramentas e versões: ${ia.ferramentas || '______________________'}\nFinalidades: ${ia.fins.join('; ') || '______________________'}\nEtapas: ${ia.etapas.join('; ') || '______________________'}\nDescrição: ${ia.desc || '______________________'}\n\nDeclaramos que todo o conteúdo foi revisado pelos autores, que assumem integral responsabilidade por sua exatidão, originalidade e pelas referências citadas.\n\nLocal e data: ______________________\n\n${(a ? a.authors : [{ name: '' }]).map(x => `Assinatura: ______________________  ${x.name}`).join('\n')}\n`;
+  }
+  download(name, blob) { const u = URL.createObjectURL(blob); const l = document.createElement('a'); l.href = u; l.download = name; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 2000); }
+  submit = () => {
+    const s = this.state, err = [];
+    if (!s.cap) err.push('[A01] capítulo'); if (!s.resp.nome) err.push('[A02] nome'); if (!s.resp.email) err.push('[A03] e-mail');
+    s.authors.forEach((x, i) => { if (!x.name) err.push(`[${s.cap}-A${i + 1}.1] nome`); if (!x.confirma) err.push(`[${s.cap}-A${i + 1}.7] confirmação de autoria`); });
+    if (!s.ia.uso) err.push('[D01] uso de IA'); if (s.ia.uso === 'sim' && !s.ia.ferramentas) err.push('[D02] ferramentas'); if (s.ia.uso === 'sim' && !s.ia.fins.length) err.push('[D03] finalidade');
+    if (!s.ia.compromisso) err.push('[D06] responsabilidade'); if (!s.decl) err.push('[D07] declaração assinada');
+    if (err.length) { this.setState({ errors: err, sent: '' }); return; }
+    const C = s.cap; const files = [];
+    s.authors.forEach((x, i) => x.foto && files.push([`${C}-A${i + 1}-FOTO${this.ext(x.foto)}`, x.foto]));
+    files.push([`${C}-DECL-IA${this.ext(s.decl) || '.pdf'}`, s.decl]);
+    s.imgs.forEach((m, i) => m.file && files.push([`${C}-IMG-0${i + 1}${this.ext(m.file)}`, m.file]));
+    if (s.termo) files.push([`${C}-IMG-TERMO${this.ext(s.termo) || '.pdf'}`, s.termo]);
+    s.orig.forEach((x, i) => files.push([`${C}-FIG-${String(i + 1).padStart(2, '0')}${this.ext(x)}`, x]));
+    const rec = { codigo: C, enviado_em: new Date().toISOString(), A02: s.resp.nome, A03: s.resp.email,
+      B: s.authors.map((x, i) => ({ codigo: `${C}-A${i + 1}`, '1_nome': x.name, '2_vinculo': x.vinculo, '3_email': x.email, '4_orcid': x.orcid, '5_redes': x.redes, '6_bio': x.bio, '7_confirma': x.confirma, '8_foto': x.foto ? `${C}-A${i + 1}-FOTO${this.ext(x.foto)}` : null })),
+      C: s.revs.filter(r => r.atual || r.novo).map((r, i) => ({ codigo: `${C}-REV-${String(i + 1).padStart(2, '0')}`, '1_pagina': r.pag || '', '2_paragrafo': r.cod || '', '3_tipo': r.tipo || '', '4_atual': r.atual || '', '5_corrigido': r.novo || '', '6_justificativa': r.just || '' })),
+      D: { D01: s.ia.uso, D02: s.ia.ferramentas, D03: s.ia.fins, D04: s.ia.etapas, D05: s.ia.desc, D06: s.ia.compromisso, D07: `${C}-DECL-IA${this.ext(s.decl) || '.pdf'}` },
+      E: { E01: s.card.ok || 'nao-respondido', E02: s.card.frase, E03: s.card.cod },
+      F: s.imgs.map((m, i) => ({ codigo: `${C}-IMG-0${i + 1}`, '1_arquivo': m.file ? `${C}-IMG-0${i + 1}${this.ext(m.file)}` : null, '2_legenda': m.legenda || '', '3_credito': m.credito || '', '4_alt': m.alt || '', '5_autoriza': !!m.autoriza })).filter(x => x['1_arquivo']),
+      H: { H01: s.fotoTec, H02: s.termo ? `${C}-IMG-TERMO${this.ext(s.termo) || '.pdf'}` : null, H03: s.orig.map((x, i) => `${C}-FIG-${String(i + 1).padStart(2, '0')}${this.ext(x)}`) },
+      G01: s.obs };
+    rec.token = s.token || ''; rec.origem = 'formulario';
+    try { rec._pre = window.NDH.prechecks(JSON.parse(JSON.stringify(rec)), this.art()); } catch (e) {}
+    this.setState({ sending: true, errors: [], sent: '' });
+    window.NDH.submit(rec, files).then(r => {
+      if (!r || !r.ok) throw new Error((r && r.erro) || 'falha no envio');
+      this.setState({ sending: false, sent: `Recebido como ${r.subId}. ${r.demo ? 'Modo demonstração: registro salvo neste navegador (' + r.pasta + ').' : 'Arquivos salvos no Drive em ' + r.subId + '.'} Anexos: ${files.map(f => f[0]).join(', ') || 'nenhum'}.` });
+    }).catch(err => {
+      this.download(`${C}-RESPOSTA.json`, new Blob([JSON.stringify(rec, null, 2)], { type: 'application/json' }));
+      files.forEach(([n, f], k) => setTimeout(() => this.download(n, f), 300 * (k + 1)));
+      this.setState({ sending: false, sent: `Não foi possível enviar (${err.message}). Baixamos o pacote para envio por e-mail: ${C}-RESPOSTA.json e ${files.length} anexos.` });
+    });
+  };
+  renderVals() {
+    const s = this.state; const a = this.art(); const C = s.cap || 'ART-00';
+    const setter = (key, i, fields) => Object.fromEntries(fields.map(f => [f, e => this.upd(key, i, f, this.val(e))]));
+    const obj = (key, fields) => Object.fromEntries(fields.map(f => [f, e => { const v = this.val(e); this.setState(st => ({ [key]: { ...st[key], [f]: v } })); }]));
+    const info = (f, code) => f ? `${f.name} → será enviado como ${code}${this.ext(f)}` : `Nenhum arquivo · nome final: ${code}`;
+    return {
+      chapters: this.arts().map(x => ({ id: x.id, label: `${x.id} · ${this.strip(x.titleClean).slice(0, 80)}` })),
+      cap: s.cap, setCap: this.setCap, hasCap: !!a,
+      capTitle: a ? this.strip(a.titleClean) : '', capAuthors: a ? a.authors.map(x => x.name).join(' · ') : '',
+      resp: s.resp, setResp: obj('resp', ['nome', 'email']),
+      noAuthors: !s.authors.length,
+      authors: s.authors.map((x, i) => ({ ...x, k: i + 1, code: `${C}-A${i + 1}`, set: setter('authors', i, ['name', 'vinculo', 'email', 'orcid', 'redes', 'bio', 'confirma', 'foto']), fotoInfo: info(x.foto, `${C}-A${i + 1}-FOTO`) })),
+      revs: s.revs.map((r, i) => ({ pag: '', cod: '', tipo: '', atual: '', novo: '', just: '', ...r, code: `${C}-REV-${String(i + 1).padStart(2, '0')}`, set: setter('revs', i, ['pag', 'cod', 'tipo', 'atual', 'novo', 'just']), remove: () => this.setState(st => ({ revs: st.revs.length > 1 ? st.revs.filter((_, j) => j !== i) : [{}] })) })),
+      addRev: () => this.setState(st => ({ revs: [...st.revs, {}] })),
+      ia: s.ia, setIa: obj('ia', ['ferramentas', 'desc', 'compromisso']),
+      iaSim: s.ia.uso === 'sim', iaNao: s.ia.uso === 'nao',
+      setIaSim: () => this.setState(st => ({ ia: { ...st.ia, uso: 'sim' } })), setIaNao: () => this.setState(st => ({ ia: { ...st.ia, uso: 'nao' } })),
+      iaFins: FINS.map(l => ({ label: l, on: s.ia.fins.includes(l), toggle: () => this.setState(st => ({ ia: { ...st.ia, fins: this.toggle(st.ia.fins, l) } })) })),
+      iaEtapas: ETAPAS.map(l => ({ label: l, on: s.ia.etapas.includes(l), toggle: () => this.setState(st => ({ ia: { ...st.ia, etapas: this.toggle(st.ia.etapas, l) } })) })),
+      setDecl: e => this.setState({ decl: this.val(e) }), declInfo: info(s.decl, `${C}-DECL-IA`),
+      downloadModelo: () => this.download(`${C}-DECL-IA-modelo.txt`, new Blob([this.modelo()], { type: 'text/plain;charset=utf-8' })),
+      destaque: a ? this.strip(a.summary.destaque) : '',
+      card: s.card, setCard: obj('card', ['frase', 'cod']), cardOk: s.card.ok === 'manter', cardOutra: s.card.ok === 'outra',
+      setCardOk: () => this.setState(st => ({ card: { ...st.card, ok: 'manter' } })), setCardOutra: () => this.setState(st => ({ card: { ...st.card, ok: 'outra' } })),
+      imgs: s.imgs.map((m, i) => ({ legenda: '', credito: '', alt: '', autoriza: false, ...m, code: `${C}-IMG-0${i + 1}`, set: setter('imgs', i, ['file', 'legenda', 'credito', 'alt', 'autoriza']), fileInfo: info(m.file, `${C}-IMG-0${i + 1}`) })),
+      fotoTec: s.fotoTec, setFotoTec: e => this.setState({ fotoTec: this.val(e) }),
+      setTermo: e => this.setState({ termo: this.val(e) }), termoInfo: info(s.termo, `${C}-IMG-TERMO`),
+      setOrig: e => this.setState({ orig: [...e.target.files] }), origInfo: s.orig.length ? s.orig.map((x, i) => `${x.name} → ${C}-FIG-${String(i + 1).padStart(2, '0')}${this.ext(x)}`).join(' · ') : 'Na ordem das figuras: 1º arquivo = FIG-01…',
+      obs: s.obs, setObs: e => this.setState({ obs: this.val(e) }),
+      hasErrors: s.errors.length > 0, errorsText: s.errors.join(' · '),
+      sent: !!s.sent, sentText: s.sent, submit: this.submit,
+      locked: !!s.locked, accessName: s.access ? (s.access.name || s.access.nome) : '', portalHref: `Portal do Autor.dc.html?art=${s.cap}&chave=${s.token || ''}`,
+      modeLabel: typeof window !== 'undefined' && window.NDH && window.NDH.online() ? 'Envio direto ao Drive do NDH' : 'Modo demonstração · sem endpoint configurado',
+      submitLabel: s.sending ? 'Enviando…' : 'Enviar revisão'
+    };
+  }
+}
+</script>
+</body>
+</html>

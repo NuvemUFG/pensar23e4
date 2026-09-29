@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/organic-b9a4001a-5f87-4020-9d98-9f5ac7d76b2d/styles.css">
+<script src="_ds/organic-b9a4001a-5f87-4020-9d98-9f5ac7d76b2d/_ds_bundle.js"></script>
+<script src="integracao/config.js"></script>
+<script src="integracao/ndh-api.js"></script>
+<title>Painel da organização · 25 anos do NDH</title>
+<style>body{margin:0;background:var(--color-bg)}a{color:#ab201d}a:hover{color:#911412}</style>
+</helmet>
+<div style="max-width:1180px;padding:40px 28px 140px;display:flex;flex-direction:column;gap:32px;font-family:var(--font-body);color:var(--color-text)">
+
+  <header style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+    <img src="assets/flor.png" alt="" style="width:48px;height:48px;flex:none">
+    <div style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:800;font-size:12px;letter-spacing:.14em;color:#ab201d">ORGANIZAÇÃO · REVISÃO DE PROVAS</span><h1 style="font-size:34px;margin:0;line-height:1.1">Painel da organização</h1></div>
+    <nav class="seg" style="margin-left:auto;flex-wrap:wrap"><sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="4"><label class="seg-opt"><input type="radio" name="tab" checked="{{ tb.on }}" onChange="{{ tb.go }}">{{ tb.label }}</label></sc-for></nav>
+  </header>
+
+  <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px">
+    <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="5">
+      <div style="padding:18px 20px;border-radius:var(--radius-lg);background:#fbf7ef;display:flex;flex-direction:column;gap:4px"><span style="font-family:var(--font-heading);font-size:32px;line-height:1">{{ k.v }}</span><span style="font-size:13px;color:var(--color-neutral-800)">{{ k.l }}</span></div>
+    </sc-for>
+  </section>
+
+  <sc-if value="{{ tabSubs }}" hint-placeholder-val="{{ true }}">
+    <section style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <div class="field" style="min-width:260px"><label for="flt">Capítulo</label><select id="flt" class="input" value="{{ filter }}" onChange="{{ setFilter }}"><option value="">Todos</option><sc-for list="{{ artOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select></div>
+        <button class="btn btn-secondary" style="align-self:flex-end" onClick="{{ reload }}">Atualizar</button>
+        <button class="btn btn-secondary" style="align-self:flex-end" onClick="{{ runAll }}">{{ runAllLabel }}</button>
+        <button class="btn btn-primary" style="align-self:flex-end" onClick="{{ exportMd }}">Exportar alterações aprovadas</button>
+      </div>
+      <span style="font-size:13px;color:var(--color-neutral-800)">{{ msg }}</span>
+      <sc-if value="{{ noSubs }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:14px;color:var(--color-neutral-700)">Nenhuma submissão ainda. Teste pelo portal de um autor (aba Acessos).</p></sc-if>
+      <sc-for list="{{ subs }}" as="s" hint-placeholder-count="2">
+        <article style="display:flex;flex-direction:column;gap:14px;padding:24px;border-radius:var(--radius-lg);background:#fbf7ef">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span class="tag tag-accent-2">{{ s.subId }}</span><strong style="font-size:15px">{{ s.title }}</strong>
+            <span style="font-size:13px;color:var(--color-neutral-700)">{{ s.who }} · {{ s.when }} · {{ s.origem }}</span>
+            <div style="margin-left:auto;display:flex;gap:8px"><sc-if value="{{ s.hasFolder }}" hint-placeholder-val="{{ false }}"><a class="btn btn-ghost" href="{{ s.folder }}" target="_blank">Pasta no Drive</a></sc-if><button class="btn btn-secondary" onClick="{{ s.run }}">{{ s.runLabel }}</button></div>
+          </div>
+          <sc-if value="{{ s.hasParecer }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:14px;line-height:1.6;padding:12px 16px;border-radius:var(--radius-md);background:#e8e6c0"><strong>Agente:</strong> {{ s.resumo }}</p></sc-if>
+          <sc-for list="{{ s.revs }}" as="r" hint-placeholder-count="0">
+            <div style="display:grid;grid-template-columns:120px minmax(0,1fr) 250px;gap:14px;align-items:start;padding:12px 0;box-shadow:inset 0 -1px 0 var(--color-divider)">
+              <div style="display:flex;flex-direction:column;gap:2px"><strong style="color:#ab201d;font-size:14px">{{ r.cod }}</strong><span style="font-size:11px;color:var(--color-neutral-700);word-break:break-all">{{ r.codigo }}</span><span style="font-size:12px">{{ r.tipo }}</span></div>
+              <div style="display:flex;flex-direction:column;gap:5px;font-size:14px;line-height:1.5;min-width:0">
+                <span style="text-decoration:line-through;color:#7d1210">{{ r.atual }}</span>
+                <span style="background:var(--color-accent-2-100);color:var(--color-accent-2-900);border-radius:6px;padding:2px 6px;align-self:flex-start">{{ r.novo }}</span>
+                <sc-if value="{{ r.adjusted }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px"><strong>Texto final do agente:</strong> {{ r.final }}</span></sc-if>
+                <sc-if value="{{ r.hasAgent }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:var(--color-neutral-800)"><strong>{{ r.agDec }}</strong> · {{ r.motivo }}</span></sc-if>
+                <sc-for list="{{ r.flags }}" as="fl" hint-placeholder-count="0"><span style="font-size:12px;padding:4px 10px;border-radius:999px;background:#f6e3c2;align-self:flex-start">{{ fl.cat }} · {{ fl.msg }}</span></sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <span class="tag tag-neutral" style="align-self:flex-start">{{ r.label }}</span>
+                <div style="display:flex;flex-wrap:wrap;gap:6px"><button class="btn btn-primary" style="padding:4px 12px;font-size:13px" onClick="{{ r.approve }}">Aplicar</button><button class="btn btn-secondary" style="padding:4px 12px;font-size:13px" onClick="{{ r.adjust }}">Aplicar ajuste</button><button class="btn btn-ghost" style="padding:4px 12px;font-size:13px" onClick="{{ r.reject }}">Recusar</button><button class="btn btn-ghost" style="padding:4px 12px;font-size:13px" onClick="{{ r.ask }}">Consultar</button></div>
+              </div>
+            </div>
+          </sc-for>
+          <sc-for list="{{ s.pend }}" as="pd" hint-placeholder-count="0"><span style="font-size:13px;padding:8px 12px;border-radius:var(--radius-md);background:#f6e3c2"><strong>{{ pd.nivel }}</strong> · {{ pd.campo }}: {{ pd.texto }}</span></sc-for>
+          <sc-if value="{{ s.hasMsg }}" hint-placeholder-val="{{ false }}">
+            <details style="font-size:14px"><summary style="cursor:pointer;font-weight:700">Mensagem sugerida ao autor</summary><p style="margin:10px 0 0;line-height:1.6;white-space:pre-wrap">{{ s.msgAutor }}</p><button class="btn btn-ghost" style="margin-top:8px" onClick="{{ s.copyMsg }}">Copiar mensagem</button></details>
+          </sc-if>
+        </article>
+      </sc-for>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ tabAcessos }}" hint-placeholder-val="{{ false }}">
+    <section style="display:flex;flex-direction:column;gap:12px">
+      <p style="margin:0;font-size:14px;line-height:1.6;max-width:760px;color:var(--color-neutral-800)">Um link por autor: abre somente o capítulo dele, com a prova, as propostas de alteração, a versão com alterações e as sugestões. No Drive, as chaves são aleatórias e geradas pela função gerarAcessos(); aqui, em modo demonstração, são derivadas do e-mail.</p>
+      <div style="display:flex;gap:10px"><button class="btn btn-secondary" onClick="{{ copyLinks }}">{{ copyLinksLabel }}</button></div>
+      <div style="overflow:auto;border-radius:var(--radius-lg);background:#fbf7ef">
+        <table class="table" style="width:100%;font-size:13px">
+          <thead><tr><th scope="col">Código</th><th scope="col">Autor</th><th scope="col">E-mail</th><th scope="col">Chave</th><th scope="col">Acesso</th></tr></thead>
+          <tbody><sc-for list="{{ access }}" as="x" hint-placeholder-count="5"><tr><td style="white-space:nowrap;font-weight:700">{{ x.code }}</td><td>{{ x.name }}</td><td style="word-break:break-all">{{ x.email }}</td><td style="font-family:ui-monospace,monospace">{{ x.token }}</td><td style="white-space:nowrap"><a href="{{ x.portal }}">Portal</a> · <a href="{{ x.form }}">Formulário</a></td></tr></sc-for></tbody>
+        </table>
+      </div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ tabConfig }}" hint-placeholder-val="{{ false }}">
+    <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:14px;padding:24px;border-radius:var(--radius-lg);background:#fbf7ef">
+        <h2 style="font-size:22px;margin:0">Conexão com o Drive</h2>
+        <div class="field"><label for="ep">Endereço do App da Web (Apps Script)</label><input id="ep" class="input" placeholder="https://script.google.com/macros/s/…/exec" value="{{ ep }}" onChange="{{ setEp }}"></div>
+        <div class="field"><label for="ak">Chave da organização (ADMIN_KEY)</label><input id="ak" type="password" class="input" value="{{ ak }}" onChange="{{ setAk }}"></div>
+        <div style="display:flex;gap:10px;align-items:center"><button class="btn btn-primary" onClick="{{ saveCfg }}">Salvar e conectar</button><span style="font-size:13px">{{ cfgMsg }}</span></div>
+        <p style="margin:0;font-size:12px;color:var(--color-neutral-700)">Vazio = modo demonstração (dados apenas neste navegador, sem anexos).</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;padding:24px;border-radius:var(--radius-lg);background:#fbf7ef">
+        <h2 style="font-size:22px;margin:0">Instalação em 7 passos</h2>
+        <sc-for list="{{ steps }}" as="st" hint-placeholder-count="7"><div style="display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;font-size:14px;line-height:1.55"><span style="width:26px;height:26px;border-radius:50%;background:#e5b60e;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">{{ st.n }}</span><span>{{ st.t }}</span></div></sc-for>
+        <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-secondary" href="integracao/Code.gs" download="Code.gs">Baixar Code.gs</a><a class="btn btn-secondary" href="integracao/autores.csv" download="autores.csv">Baixar autores.csv</a></div>
+      </div>
+      <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:10px;padding:24px;border-radius:var(--radius-lg);background:#fbf7ef">
+        <h2 style="font-size:22px;margin:0">Estrutura no Drive</h2>
+        <pre style="margin:0;font-family:ui-monospace,monospace;font-size:13px;line-height:1.6;white-space:pre-wrap">NDH25 Prova dos Autores/
+  00 Controle/                NDH25 Controle (planilha: Acessos · Submissoes · Revisoes · Arquivos · Pareceres)
+  ART-03/
+    ART-03-SUB-001/           ART-03-SUB-001-RESPOSTA.json · ART-03-A1-FOTO.jpg · ART-03-DECL-IA.pdf · ART-03-IMG-01.png
+                              ART-03-SUB-001-PARECER.json · ART-03-SUB-001-PARECER.md
+    ART-03-SUB-002/           …
+  99 Versao com alteracoes/   ART-03-ALTERACOES.md (regerado a cada decisão)</pre>
+      </div>
+    </section>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { tab: 'subs', subs: [], access: [], filter: '', msg: '', running: {}, runAll: false, ep: '', ak: '', cfgMsg: '', copied: false };
+  async componentDidMount() {
+    await new Promise(r => { const k = () => window.NDH ? r() : setTimeout(k, 50); k(); });
+    const c = window.NDH.cfg(); this.setState({ ep: c.endpoint, ak: c.admin });
+    try { this.d = await window.NDH.data(); } catch (e) { this.setState({ tab: 'config', cfgMsg: 'Informe a chave da organização: ' + e.message }); return; }
+    this.reload();
+  }
+  reload = async () => {
+    const N = window.NDH;
+    try {
+      if (N.online()) { const r = await N.get({ action: 'admin', k: N.cfg().admin }); if (!r.ok) throw new Error(r.erro); this.setState({ subs: r.subs || [], access: (r.acessos || []).map(x => ({ code: x.codigo_autor, name: x.nome, email: x.email, token: x.token, portal: x.link_portal, form: x.link_formulario })), msg: '' }); }
+      else this.setState({ subs: await N.list(), access: await N.accessList() });
+    } catch (e) { this.setState({ msg: 'Falha ao carregar: ' + e.message }); }
+  };
+  art(id) { return window.NDH.articles(this.d).find(a => a.id === id); }
+  run = async s => {
+    this.setState(st => ({ running: { ...st.running, [s.subId]: true } }));
+    try { await window.NDH.agent(JSON.parse(JSON.stringify(s)), this.art(s.codigo)); } catch (e) { this.setState({ msg: `${s.subId}: ${e.message}` }); }
+    this.setState(st => ({ running: { ...st.running, [s.subId]: false } })); await this.reload();
+  };
+  runAll = async () => { this.setState({ runAll: true }); for (const s of this.visible().filter(x => !x.parecer)) await this.run(s); this.setState({ runAll: false }); };
+  setStatus = async (s, code, st) => { await window.NDH.update(s.subId, { status: { [code]: st } }); this.reload(); };
+  visible() { return this.state.subs.filter(s => !this.state.filter || s.codigo === this.state.filter); }
+  exportMd = () => {
+    const N = window.NDH; const byArt = {};
+    this.state.subs.forEach(s => (byArt[s.codigo] = byArt[s.codigo] || []).push(s));
+    let md = `# Alterações aprovadas para a versão de provas\n25 anos do NDH · gerado em ${new Date().toLocaleString('pt-BR')}\n`;
+    Object.keys(byArt).sort().forEach(id => {
+      const ch = N.changes(byArt[id], this.art(id)).filter(c => /aprovada|ajustada/.test(c.dec)); if (!ch.length) return;
+      md += `\n## ${id}\n` + ch.map(c => `- §${c.cod} (${c.codigo}) · ${c.dec}\n  - sai: ${c.atual}\n  - entra: ${c.dec === 'ajustada' ? c.novo : c.original}`).join('\n') + '\n';
+    });
+    const u = URL.createObjectURL(new Blob([md], { type: 'text/markdown;charset=utf-8' })); const l = document.createElement('a'); l.href = u; l.download = 'NDH25-ALTERACOES-APROVADAS.md'; document.body.appendChild(l); l.click(); l.remove();
+  };
+  renderVals() {
+    const s = this.state, N = window.NDH; if (!N) return { tabs: [], kpis: [], subs: [], access: [], steps: [], artOpts: [], tabSubs: true }; const D = this.d;
+    const fmt = iso => { try { return new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }); } catch (e) { return iso; } };
+    const all = s.subs; const revs = all.flatMap(x => (x.C || []).map(r => N.decisionOf(x, r.codigo)));
+    const altas = all.reduce((n, x) => n + ((x.parecer && x.parecer.pendencias) || []).filter(p => p.nivel === 'alto').length, 0);
+    const steps = ['Crie um projeto em script.google.com com a conta institucional do NDH e cole o Code.gs.', 'Em Configurações do projeto → Propriedades do script, defina ANTHROPIC_API_KEY, ADMIN_KEY, ORG_EMAIL e PORTAL_URL.', 'Execute instalar(): cria a pasta NDH25 Prova dos Autores, as 23 pastas de capítulo e a planilha de controle.', 'Cole o autores.csv na aba Acessos e execute gerarAcessos() para criar as chaves pessoais.', 'Implantar → Nova implantação → App da Web (executar como você; acesso: qualquer pessoa). Copie o endereço /exec.', 'Cole o endereço e a ADMIN_KEY ao lado e salve. Publique o Portal, o Formulário e este Painel no mesmo endereço.', 'Execute enviarLinks(): cada autor recebe o link do próprio capítulo por e-mail.'];
+    return {
+      tabs: [['subs', 'Submissões'], ['acessos', 'Acessos'], ['config', 'Configuração']].map(([k, l]) => ({ label: l, on: s.tab === k, go: () => this.setState({ tab: k }) })),
+      tabSubs: s.tab === 'subs', tabAcessos: s.tab === 'acessos', tabConfig: s.tab === 'config',
+      kpis: [{ v: all.length, l: 'submissões' }, { v: new Set(all.map(x => x.codigo)).size + '/23', l: 'capítulos com retorno' }, { v: revs.length, l: 'revisões propostas' }, { v: revs.filter(d => /aprovada|ajustada/.test(d)).length, l: 'aplicadas na prova' }, { v: altas, l: 'pendências altas' }],
+      artOpts: !D ? [] : N.articles(D).map(a => ({ id: a.id, label: `${a.id} · ${N.strip(a.titleClean).slice(0, 60)}` })), filter: s.filter, setFilter: e => this.setState({ filter: e.target.value }),
+      reload: this.reload, runAll: this.runAll, runAllLabel: s.runAll ? 'Verificando…' : 'Verificar pendentes com o agente', exportMd: this.exportMd, msg: s.msg,
+      noSubs: !this.visible().length,
+      subs: !D ? [] : this.visible().slice().reverse().map(x => {
+        const a = this.art(x.codigo); const pre = N.prechecks(JSON.parse(JSON.stringify(x)), a); const P = x.parecer || {};
+        return { subId: x.subId, title: `${a.num}. ${N.strip(a.titleClean).slice(0, 70)}`, who: x.A02 || '', when: fmt(x.recebido_em), origem: x.origem === 'portal' ? 'portal' : 'formulário',
+          hasFolder: !!x.pasta && /^http/.test(x.pasta), folder: x.pasta || '', run: () => this.run(x), runLabel: s.running[x.subId] ? 'Verificando…' : (x.parecer ? 'Verificar de novo' : 'Verificar com o agente'),
+          hasParecer: !!x.parecer, resumo: P.resumo || '',
+          revs: (x.C || []).map(r => { const it = (P.itens || []).find(i => i.codigo === r.codigo); const dec = N.decisionOf(x, r.codigo);
+            return { codigo: r.codigo, cod: N.normCod(r['2_paragrafo'], a.num) || '—', tipo: r['3_tipo'] || '', atual: r['4_atual'], novo: r['5_corrigido'], final: it ? it.texto_final : '', adjusted: !!(it && it.texto_final && it.texto_final !== r['5_corrigido']), hasAgent: !!it, agDec: it ? 'Agente: ' + it.decisao : '', motivo: it ? it.motivo : '', label: N.decLabel(dec).label,
+              flags: pre.filter(f => f.codigo === r.codigo),
+              approve: () => this.setStatus(x, r.codigo, 'aprovada'), adjust: () => this.setStatus(x, r.codigo, 'ajustada'), reject: () => this.setStatus(x, r.codigo, 'recusada'), ask: () => this.setStatus(x, r.codigo, 'consultar') }; }),
+          pend: (P.pendencias || pre.filter(f => !/REV-/.test(f.codigo)).map(f => ({ campo: f.codigo, nivel: f.nivel, texto: f.msg }))),
+          hasMsg: !!P.mensagem_autor, msgAutor: P.mensagem_autor || '', copyMsg: () => navigator.clipboard && navigator.clipboard.writeText(P.mensagem_autor || '') };
+      }),
+      access: s.access, copyLinksLabel: s.copied ? 'Copiados' : 'Copiar todos os links',
+      copyLinks: () => { const base = location.href.replace(/[^/]*$/, ''); navigator.clipboard && navigator.clipboard.writeText(s.access.map(x => `${x.code}\t${x.name}\t${x.email}\t${/^http/.test(x.portal) ? x.portal : base + x.portal}`).join('\n')); this.setState({ copied: true }); },
+      ep: s.ep, ak: s.ak, setEp: e => this.setState({ ep: e.target.value }), setAk: e => this.setState({ ak: e.target.value }), cfgMsg: s.cfgMsg,
+      saveCfg: async () => { N.setCfg(s.ep, s.ak); N._d = null; this.setState({ cfgMsg: s.ep ? 'Conectando…' : 'Modo demonstração' }); try { this.d = await N.data(); } catch (e) { this.setState({ cfgMsg: 'Falha: ' + e.message }); return; } await this.reload(); this.setState({ cfgMsg: s.ep ? (this.state.msg ? 'Falha na conexão' : 'Conectado') : 'Modo demonstração' }); },
+      steps: steps.map((t, i) => ({ n: i + 1, t }))
+    };
+  }
+}
+</script>
+</body>
+</html>
